@@ -291,47 +291,49 @@ export class Formatter {
           `- **SDK:** ${runDestination.targetSDKRecord.name}, ${runDestination.targetSDKRecord.operatingSystemVersion}`
         )
 
-        chapterSummary.content.push('<table>')
-        chapterSummary.content.push('<tr>')
-        const header = [
-          `<th>Test`,
-          `<th>Total`,
-          `<th>${passedIcon}`,
-          `<th>${failedIcon}`,
-          `<th>${skippedIcon}`,
-          `<th>${expectedFailureIcon}`
-        ].join('')
-        chapterSummary.content.push(header)
-
-        for (const [identifier, stats] of Object.entries(group)) {
+        if (!options.hideSummaryTable) {
+          chapterSummary.content.push('<table>')
           chapterSummary.content.push('<tr>')
-          const testClass = `${testClassIcon}&nbsp;${identifier}`
-          const testClassAnchor = anchorNameTag(
-            `${groupIdentifier}_${identifier}_summary`
-          )
-          const anchorName = anchorIdentifier(
-            `${groupIdentifier}_${identifier}`
-          )
-          const testClassLink = `<a href="${anchorName}">${testClass}</a>`
-
-          let failedCount: string
-          if (stats.failed > 0) {
-            failedCount = `<b>${stats.failed}</b>`
-          } else {
-            failedCount = `${stats.failed}`
-          }
-          const cols = [
-            `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
-            `<td align="right" width="80px">${stats.total}`,
-            `<td align="right" width="80px">${stats.passed}`,
-            `<td align="right" width="80px">${failedCount}`,
-            `<td align="right" width="80px">${stats.skipped}`,
-            `<td align="right" width="80px">${stats.expectedFailure}`
+          const header = [
+            `<th>Test`,
+            `<th>Total`,
+            `<th>${passedIcon}`,
+            `<th>${failedIcon}`,
+            `<th>${skippedIcon}`,
+            `<th>${expectedFailureIcon}`
           ].join('')
-          chapterSummary.content.push(cols)
+          chapterSummary.content.push(header)
+
+          for (const [identifier, stats] of Object.entries(group)) {
+            chapterSummary.content.push('<tr>')
+            const testClass = `${testClassIcon}&nbsp;${identifier}`
+            const testClassAnchor = anchorNameTag(
+              `${groupIdentifier}_${identifier}_summary`
+            )
+            const anchorName = anchorIdentifier(
+              `${groupIdentifier}_${identifier}`
+            )
+            const testClassLink = `<a href="${anchorName}">${testClass}</a>`
+
+            let failedCount: string
+            if (stats.failed > 0) {
+              failedCount = `<b>${stats.failed}</b>`
+            } else {
+              failedCount = `${stats.failed}`
+            }
+            const cols = [
+              `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
+              `<td align="right" width="80px">${stats.total}`,
+              `<td align="right" width="80px">${stats.passed}`,
+              `<td align="right" width="80px">${failedCount}`,
+              `<td align="right" width="80px">${stats.skipped}`,
+              `<td align="right" width="80px">${stats.expectedFailure}`
+            ].join('')
+            chapterSummary.content.push(cols)
+          }
+          chapterSummary.content.push('')
+          chapterSummary.content.push('</table>\n')
         }
-        chapterSummary.content.push('')
-        chapterSummary.content.push('</table>\n')
       }
 
       chapterSummary.content.push('---\n')
@@ -984,9 +986,15 @@ interface FailureSummary {
 export class FormatterOptions {
   showPassedTests: boolean
   showCodeCoverage: boolean
+  hideSummaryTable: boolean
 
-  constructor(showPassedTests = true, showCodeCoverage = true) {
+  constructor(
+    showPassedTests = true,
+    showCodeCoverage = true,
+    hideSummaryTable = false
+  ) {
     this.showPassedTests = showPassedTests
     this.showCodeCoverage = showCodeCoverage
+    this.hideSummaryTable = hideSummaryTable
   }
 }

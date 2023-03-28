@@ -118,6 +118,11 @@ jobs:
     #
     # Default: 'always'
     upload-bundles:
+
+    # Wheter to hide the table with all test results in the Test Summary section
+    #
+    # Default: false
+    hide-summary-table:
 ```
 
 ## Limitations

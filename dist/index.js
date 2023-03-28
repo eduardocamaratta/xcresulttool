@@ -523,42 +523,44 @@ class Formatter {
                     const runDestination = chapter.runDestination;
                     chapterSummary.content.push(`- **Device:** ${runDestination.targetDeviceRecord.modelName}, ${runDestination.targetDeviceRecord.operatingSystemVersionWithBuildNumber}`);
                     chapterSummary.content.push(`- **SDK:** ${runDestination.targetSDKRecord.name}, ${runDestination.targetSDKRecord.operatingSystemVersion}`);
-                    chapterSummary.content.push('<table>');
-                    chapterSummary.content.push('<tr>');
-                    const header = [
-                        `<th>Test`,
-                        `<th>Total`,
-                        `<th>${passedIcon}`,
-                        `<th>${failedIcon}`,
-                        `<th>${skippedIcon}`,
-                        `<th>${expectedFailureIcon}`
-                    ].join('');
-                    chapterSummary.content.push(header);
-                    for (const [identifier, stats] of Object.entries(group)) {
+                    if (!options.hideSummaryTable) {
+                        chapterSummary.content.push('<table>');
                         chapterSummary.content.push('<tr>');
-                        const testClass = `${testClassIcon}&nbsp;${identifier}`;
-                        const testClassAnchor = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_${identifier}_summary`);
-                        const anchorName = (0, markdown_1.anchorIdentifier)(`${groupIdentifier}_${identifier}`);
-                        const testClassLink = `<a href="${anchorName}">${testClass}</a>`;
-                        let failedCount;
-                        if (stats.failed > 0) {
-                            failedCount = `<b>${stats.failed}</b>`;
-                        }
-                        else {
-                            failedCount = `${stats.failed}`;
-                        }
-                        const cols = [
-                            `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
-                            `<td align="right" width="80px">${stats.total}`,
-                            `<td align="right" width="80px">${stats.passed}`,
-                            `<td align="right" width="80px">${failedCount}`,
-                            `<td align="right" width="80px">${stats.skipped}`,
-                            `<td align="right" width="80px">${stats.expectedFailure}`
+                        const header = [
+                            `<th>Test`,
+                            `<th>Total`,
+                            `<th>${passedIcon}`,
+                            `<th>${failedIcon}`,
+                            `<th>${skippedIcon}`,
+                            `<th>${expectedFailureIcon}`
                         ].join('');
-                        chapterSummary.content.push(cols);
+                        chapterSummary.content.push(header);
+                        for (const [identifier, stats] of Object.entries(group)) {
+                            chapterSummary.content.push('<tr>');
+                            const testClass = `${testClassIcon}&nbsp;${identifier}`;
+                            const testClassAnchor = (0, markdown_1.anchorNameTag)(`${groupIdentifier}_${identifier}_summary`);
+                            const anchorName = (0, markdown_1.anchorIdentifier)(`${groupIdentifier}_${identifier}`);
+                            const testClassLink = `<a href="${anchorName}">${testClass}</a>`;
+                            let failedCount;
+                            if (stats.failed > 0) {
+                                failedCount = `<b>${stats.failed}</b>`;
+                            }
+                            else {
+                                failedCount = `${stats.failed}`;
+                            }
+                            const cols = [
+                                `<td align="left" width="368px">${testClassAnchor}${testClassLink}`,
+                                `<td align="right" width="80px">${stats.total}`,
+                                `<td align="right" width="80px">${stats.passed}`,
+                                `<td align="right" width="80px">${failedCount}`,
+                                `<td align="right" width="80px">${stats.skipped}`,
+                                `<td align="right" width="80px">${stats.expectedFailure}`
+                            ].join('');
+                            chapterSummary.content.push(cols);
+                        }
+                        chapterSummary.content.push('');
+                        chapterSummary.content.push('</table>\n');
                     }
-                    chapterSummary.content.push('');
-                    chapterSummary.content.push('</table>\n');
                 }
                 chapterSummary.content.push('---\n');
                 const testFailures = new report_1.TestFailures();
@@ -1056,9 +1058,10 @@ function collectFailureSummaries(failureSummaries) {
     });
 }
 class FormatterOptions {
-    constructor(showPassedTests = true, showCodeCoverage = true) {
+    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false) {
         this.showPassedTests = showPassedTests;
         this.showCodeCoverage = showCodeCoverage;
+        this.hideSummaryTable = hideSummaryTable;
     }
 }
 exports.FormatterOptions = FormatterOptions;
@@ -1191,6 +1194,7 @@ function run() {
             const inputPaths = core.getMultilineInput('path');
             const showPassedTests = core.getBooleanInput('show-passed-tests');
             const showCodeCoverage = core.getBooleanInput('show-code-coverage');
+            const hideSummaryTable = core.getBooleanInput('hide-summary-table');
             let uploadBundles = core.getInput('upload-bundles').toLowerCase();
             if (uploadBundles === 'true') {
                 uploadBundles = 'always';
@@ -1220,7 +1224,8 @@ function run() {
             const formatter = new formatter_1.Formatter(bundlePath);
             const report = yield formatter.format({
                 showPassedTests,
-                showCodeCoverage
+                showCodeCoverage,
+                hideSummaryTable
             });
             if (core.getInput('token')) {
                 yield core.summary.addRaw(report.reportSummary).write();
