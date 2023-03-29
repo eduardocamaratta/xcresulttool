@@ -712,6 +712,8 @@ class Formatter {
                                 duration
                             ];
                         }, [0, 0, 0, 0, 0, 0]);
+                        if (options.hidePassedTestsFromDetails && (failed == 0 && expectedFailure == 0))
+                            continue;
                         const testName = `${groupIdentifier}`;
                         const passedRate = ((passed / total) * 100).toFixed(0);
                         const failedRate = ((failed / total) * 100).toFixed(0);
@@ -1058,10 +1060,11 @@ function collectFailureSummaries(failureSummaries) {
     });
 }
 class FormatterOptions {
-    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false) {
+    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false, hidePassedTestsFromDetails = false) {
         this.showPassedTests = showPassedTests;
         this.showCodeCoverage = showCodeCoverage;
         this.hideSummaryTable = hideSummaryTable;
+        this.hidePassedTestsFromDetails = hidePassedTestsFromDetails;
     }
 }
 exports.FormatterOptions = FormatterOptions;
@@ -1195,6 +1198,7 @@ function run() {
             const showPassedTests = core.getBooleanInput('show-passed-tests');
             const showCodeCoverage = core.getBooleanInput('show-code-coverage');
             const hideSummaryTable = core.getBooleanInput('hide-summary-table');
+            const hidePassedTestsFromDetails = core.getBooleanInput('hide-passed-tests-from-details');
             let uploadBundles = core.getInput('upload-bundles').toLowerCase();
             if (uploadBundles === 'true') {
                 uploadBundles = 'always';
@@ -1225,7 +1229,8 @@ function run() {
             const report = yield formatter.format({
                 showPassedTests,
                 showCodeCoverage,
-                hideSummaryTable
+                hideSummaryTable,
+                hidePassedTestsFromDetails
             });
             if (core.getInput('token')) {
                 yield core.summary.addRaw(report.reportSummary).write();

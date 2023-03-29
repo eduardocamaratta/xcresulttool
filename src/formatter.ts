@@ -554,6 +554,8 @@ export class Formatter {
               [0, 0, 0, 0, 0, 0]
             )
 
+          if (options.hidePassedTestsFromDetails && (failed == 0 && expectedFailure == 0)) continue
+
           const testName = `${groupIdentifier}`
           const passedRate = ((passed / total) * 100).toFixed(0)
           const failedRate = ((failed / total) * 100).toFixed(0)
@@ -987,14 +989,17 @@ export class FormatterOptions {
   showPassedTests: boolean
   showCodeCoverage: boolean
   hideSummaryTable: boolean
+  hidePassedTestsFromDetails: boolean
 
   constructor(
     showPassedTests = true,
     showCodeCoverage = true,
-    hideSummaryTable = false
+    hideSummaryTable = false,
+    hidePassedTestsFromDetails = false
   ) {
     this.showPassedTests = showPassedTests
     this.showCodeCoverage = showCodeCoverage
     this.hideSummaryTable = hideSummaryTable
+    this.hidePassedTestsFromDetails = hidePassedTestsFromDetails
   }
 }

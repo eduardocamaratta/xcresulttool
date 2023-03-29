@@ -23,6 +23,9 @@ inputs:
   hide-summary-table:
     description: 'Whether to hide the table with all test results in the Summary section'
     default: false
+  hide-passed-tests-from-details:
+    description: 'Wheter to hide passed tests in the Details section'
+    default: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
