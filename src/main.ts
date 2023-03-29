@@ -17,6 +17,7 @@ async function run(): Promise<void> {
     const showCodeCoverage = core.getBooleanInput('show-code-coverage')
     const hideSummaryTable = core.getBooleanInput('hide-summary-table')
     const hidePassedTestsFromDetails = core.getBooleanInput('hide-passed-tests-from-details')
+    const formatAttachmentsAsTable = core.getBooleanInput('format-attachments-table')
     let uploadBundles = core.getInput('upload-bundles').toLowerCase()
     if (uploadBundles === 'true') {
       uploadBundles = 'always'
@@ -47,7 +48,8 @@ async function run(): Promise<void> {
       showPassedTests,
       showCodeCoverage,
       hideSummaryTable,
-      hidePassedTestsFromDetails
+      hidePassedTestsFromDetails,
+      formatAttachmentsAsTable
     })
 
     if (core.getInput('token')) {

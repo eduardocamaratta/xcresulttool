@@ -916,7 +916,26 @@ class Formatter {
                                                 const title = (0, markdown_1.escapeHashSign)(activity.title);
                                                 const message = `${(0, markdown_1.indentation)(activity.indent)}- ${title}`;
                                                 const attachmentIndent = (0, markdown_1.indentation)(activity.indent + 1);
-                                                const attachmentContent = attachments.join('');
+                                                let attachmentContent = '';
+                                                if (options.formatAttachmentsAsTable) {
+                                                    let attachmentLines = [];
+                                                    attachmentLines.push('<table>');
+                                                    if (attachments.length == 3) {
+                                                        attachmentLines.push('<tr>');
+                                                        attachmentLines.push('<th>Expected</th>');
+                                                        attachmentLines.push('<th>Actual</th>');
+                                                        attachmentLines.push('<th>Difference</th>');
+                                                        attachmentLines.push('</tr>');
+                                                    }
+                                                    attachmentLines.push('<tr>');
+                                                    attachmentLines.push(...attachments.map(a => `<td>${a}</td>`));
+                                                    attachmentLines.push('</tr>');
+                                                    attachmentLines.push('</table>');
+                                                    attachmentContent = attachmentLines.join('\n');
+                                                }
+                                                else {
+                                                    attachmentContent = attachments.join('');
+                                                }
                                                 return `${message}\n${attachmentIndent}<details ${open}><summary>${attachmentIcon}</summary>${attachmentContent}</details>\n`;
                                             }
                                             else {
@@ -1060,11 +1079,12 @@ function collectFailureSummaries(failureSummaries) {
     });
 }
 class FormatterOptions {
-    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false, hidePassedTestsFromDetails = false) {
+    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false, hidePassedTestsFromDetails = false, formatAttachmentsAsTable = false) {
         this.showPassedTests = showPassedTests;
         this.showCodeCoverage = showCodeCoverage;
         this.hideSummaryTable = hideSummaryTable;
         this.hidePassedTestsFromDetails = hidePassedTestsFromDetails;
+        this.formatAttachmentsAsTable = formatAttachmentsAsTable;
     }
 }
 exports.FormatterOptions = FormatterOptions;
@@ -1199,6 +1219,7 @@ function run() {
             const showCodeCoverage = core.getBooleanInput('show-code-coverage');
             const hideSummaryTable = core.getBooleanInput('hide-summary-table');
             const hidePassedTestsFromDetails = core.getBooleanInput('hide-passed-tests-from-details');
+            const formatAttachmentsAsTable = core.getBooleanInput('format-attachments-table');
             let uploadBundles = core.getInput('upload-bundles').toLowerCase();
             if (uploadBundles === 'true') {
                 uploadBundles = 'always';
@@ -1230,7 +1251,8 @@ function run() {
                 showPassedTests,
                 showCodeCoverage,
                 hideSummaryTable,
-                hidePassedTestsFromDetails
+                hidePassedTestsFromDetails,
+                formatAttachmentsAsTable
             });
             if (core.getInput('token')) {
                 yield core.summary.addRaw(report.reportSummary).write();

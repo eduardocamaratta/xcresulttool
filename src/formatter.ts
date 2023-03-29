@@ -807,7 +807,26 @@ export class Formatter {
                         const attachmentIndent = indentation(
                           activity.indent + 1
                         )
-                        const attachmentContent = attachments.join('')
+
+                        let attachmentContent = ''
+                        if (options.formatAttachmentsAsTable) {
+                          let attachmentLines = []
+                          attachmentLines.push('<table>')
+                          if (attachments.length == 3) {
+                            attachmentLines.push('<tr>')
+                            attachmentLines.push('<th>Expected</th>')
+                            attachmentLines.push('<th>Actual</th>')
+                            attachmentLines.push('<th>Difference</th>')
+                            attachmentLines.push('</tr>')
+                          }
+                          attachmentLines.push('<tr>')
+                          attachmentLines.push(...attachments.map(a => `<td>${a}</td>`))
+                          attachmentLines.push('</tr>')
+                          attachmentLines.push('</table>')
+                          attachmentContent = attachmentLines.join('\n')
+                        } else {
+                          attachmentContent = attachments.join('')
+                        }
                         return `${message}\n${attachmentIndent}<details ${open}><summary>${attachmentIcon}</summary>${attachmentContent}</details>\n`
                       } else {
                         const indent = indentation(activity.indent)
@@ -990,16 +1009,19 @@ export class FormatterOptions {
   showCodeCoverage: boolean
   hideSummaryTable: boolean
   hidePassedTestsFromDetails: boolean
+  formatAttachmentsAsTable: boolean
 
   constructor(
     showPassedTests = true,
     showCodeCoverage = true,
     hideSummaryTable = false,
-    hidePassedTestsFromDetails = false
+    hidePassedTestsFromDetails = false,
+    formatAttachmentsAsTable = false
   ) {
     this.showPassedTests = showPassedTests
     this.showCodeCoverage = showCodeCoverage
     this.hideSummaryTable = hideSummaryTable
     this.hidePassedTestsFromDetails = hidePassedTestsFromDetails
+    this.formatAttachmentsAsTable = formatAttachmentsAsTable
   }
 }

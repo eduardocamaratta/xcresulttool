@@ -24,7 +24,10 @@ inputs:
     description: 'Whether to hide the table with all test results in the Summary section'
     default: false
   hide-passed-tests-from-details:
-    description: 'Wheter to hide passed tests in the Details section'
+    description: 'Whether to hide passed tests in the Details section'
+    default: false
+  format-attachments-table:
+    description: 'Whether to format attachments as a table'
     default: false
 runs:
   using: 'node16'

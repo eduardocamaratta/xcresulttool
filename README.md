@@ -128,6 +128,11 @@ jobs:
     #
     # Default: false
     hide-passed-tests-from-details:
+
+    # Whether to format attachments as a table
+    #
+    # Default: false
+    format-attachments-table:
 ```
 
 ## Limitations
