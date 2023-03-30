@@ -918,20 +918,20 @@ class Formatter {
                                                 const attachmentIndent = (0, markdown_1.indentation)(activity.indent + 1);
                                                 let attachmentContent = '';
                                                 if (options.formatAttachmentsAsTable) {
-                                                    let attachmentLines = [];
-                                                    attachmentLines.push('<table>');
-                                                    if (attachments.length == 3) {
-                                                        attachmentLines.push('<tr>');
-                                                        attachmentLines.push('<th>Expected</th>');
-                                                        attachmentLines.push('<th>Actual</th>');
-                                                        attachmentLines.push('<th>Difference</th>');
-                                                        attachmentLines.push('</tr>');
+                                                    let attachmentLines = ['<table>'];
+                                                    if (options.attachmentsTableHeader.length > 0) {
+                                                        const header = options.attachmentsTableHeader.split(',').map(h => h.trim());
+                                                        if (attachments.length == header.length) {
+                                                            attachmentLines.push('<tr>');
+                                                            attachmentLines.push(...header.map(h => `<th>${h}</th>`));
+                                                            attachmentLines.push('</tr>');
+                                                        }
                                                     }
                                                     attachmentLines.push('<tr>');
                                                     attachmentLines.push(...attachments.map(a => `<td>${a}</td>`));
                                                     attachmentLines.push('</tr>');
                                                     attachmentLines.push('</table>');
-                                                    attachmentContent = attachmentLines.join('\n');
+                                                    attachmentContent = attachmentLines.join('');
                                                 }
                                                 else {
                                                     attachmentContent = attachments.join('');
@@ -1079,12 +1079,13 @@ function collectFailureSummaries(failureSummaries) {
     });
 }
 class FormatterOptions {
-    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false, hidePassedTestsFromDetails = false, formatAttachmentsAsTable = false) {
+    constructor(showPassedTests = true, showCodeCoverage = true, hideSummaryTable = false, hidePassedTestsFromDetails = false, formatAttachmentsAsTable = false, attachmentsTableHeader = '') {
         this.showPassedTests = showPassedTests;
         this.showCodeCoverage = showCodeCoverage;
         this.hideSummaryTable = hideSummaryTable;
         this.hidePassedTestsFromDetails = hidePassedTestsFromDetails;
         this.formatAttachmentsAsTable = formatAttachmentsAsTable;
+        this.attachmentsTableHeader = attachmentsTableHeader;
     }
 }
 exports.FormatterOptions = FormatterOptions;
@@ -1220,6 +1221,7 @@ function run() {
             const hideSummaryTable = core.getBooleanInput('hide-summary-table');
             const hidePassedTestsFromDetails = core.getBooleanInput('hide-passed-tests-from-details');
             const formatAttachmentsAsTable = core.getBooleanInput('format-attachments-table');
+            const attachmentsTableHeader = core.getInput('attachments-table-header');
             let uploadBundles = core.getInput('upload-bundles').toLowerCase();
             if (uploadBundles === 'true') {
                 uploadBundles = 'always';
@@ -1252,7 +1254,8 @@ function run() {
                 showCodeCoverage,
                 hideSummaryTable,
                 hidePassedTestsFromDetails,
-                formatAttachmentsAsTable
+                formatAttachmentsAsTable,
+                attachmentsTableHeader
             });
             if (core.getInput('token')) {
                 yield core.summary.addRaw(report.reportSummary).write();

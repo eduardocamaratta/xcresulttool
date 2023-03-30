@@ -810,20 +810,21 @@ export class Formatter {
 
                         let attachmentContent = ''
                         if (options.formatAttachmentsAsTable) {
-                          let attachmentLines = []
-                          attachmentLines.push('<table>')
-                          if (attachments.length == 3) {
-                            attachmentLines.push('<tr>')
-                            attachmentLines.push('<th>Expected</th>')
-                            attachmentLines.push('<th>Actual</th>')
-                            attachmentLines.push('<th>Difference</th>')
-                            attachmentLines.push('</tr>')
+                          let attachmentLines = ['<table>']
+
+                          if (options.attachmentsTableHeader.length > 0) {
+                            const header = options.attachmentsTableHeader.split(',').map(h => h.trim())
+                            if (attachments.length == header.length) {
+                              attachmentLines.push('<tr>')
+                              attachmentLines.push(...header.map(h => `<th>${h}</th>`))
+                              attachmentLines.push('</tr>')
+                            }
                           }
                           attachmentLines.push('<tr>')
                           attachmentLines.push(...attachments.map(a => `<td>${a}</td>`))
                           attachmentLines.push('</tr>')
                           attachmentLines.push('</table>')
-                          attachmentContent = attachmentLines.join('\n')
+                          attachmentContent = attachmentLines.join('')
                         } else {
                           attachmentContent = attachments.join('')
                         }
@@ -1010,18 +1011,21 @@ export class FormatterOptions {
   hideSummaryTable: boolean
   hidePassedTestsFromDetails: boolean
   formatAttachmentsAsTable: boolean
+  attachmentsTableHeader: string
 
   constructor(
     showPassedTests = true,
     showCodeCoverage = true,
     hideSummaryTable = false,
     hidePassedTestsFromDetails = false,
-    formatAttachmentsAsTable = false
+    formatAttachmentsAsTable = false,
+    attachmentsTableHeader = 'Expected,Actual,Difference'
   ) {
     this.showPassedTests = showPassedTests
     this.showCodeCoverage = showCodeCoverage
     this.hideSummaryTable = hideSummaryTable
     this.hidePassedTestsFromDetails = hidePassedTestsFromDetails
     this.formatAttachmentsAsTable = formatAttachmentsAsTable
+    this.attachmentsTableHeader = attachmentsTableHeader
   }
 }

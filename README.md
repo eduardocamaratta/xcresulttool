@@ -133,6 +133,11 @@ jobs:
     #
     # Default: false
     format-attachments-table:
+
+    # Comma separated list of titles for the attachments table header. Used only if it's an exact match with number of attachments. Valid only in case format-attachments-table is also true.
+    #
+    # Default: 'Expected,Actual,Difference'
+    attachments-table-header:
 ```
 
 ## Limitations
