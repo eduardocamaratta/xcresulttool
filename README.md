@@ -1,3 +1,7 @@
+# ⚠️ Archive notice
+
+This fork is unmaintained. I suggest using https://github.com/lunij/xcresulttool/ instead.
+
 <p align="center">
   <a href="https://github.com/kishikawakatsumi/xcresulttool/actions"><img alt="xcresulttool status" src="https://github.com/kishikawakatsumi/xcresulttool/workflows/build-test/badge.svg"></a>
 </p>
